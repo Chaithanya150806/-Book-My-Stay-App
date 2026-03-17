@@ -6,6 +6,12 @@
  *
  * @author YourName
  * @version 4.0
+ * UseCase3InventorySetup
+ *
+ * Demonstrates centralized room inventory management using HashMap.
+ *
+ * @author YourName
+ * @version 3.1
  */
 
 import java.util.HashMap;
@@ -27,20 +33,29 @@ abstract class Room {
         return type;
     }
 
-    public int getBeds() {
-        return beds;
+// Inventory Management Class
+class RoomInventory {
+
+    private Map<String, Integer> inventory;
+
+    // Constructor to initialize inventory
+    public RoomInventory() {
+        inventory = new HashMap<>();
     }
 
-    public double getPrice() {
-        return price;
+    // Add or initialize room type availability
+    public void addRoomType(String roomType, int count) {
+        inventory.put(roomType, count);
     }
 
     public void displayDetails() {
         System.out.println("Room Type: " + type);
         System.out.println("Beds: " + beds);
         System.out.println("Price: $" + price);
+    // Get availability of a specific room type
+    public int getAvailability(String roomType) {
+        return inventory.getOrDefault(roomType, 0);
     }
-}
 
 // Concrete Room Types
 class SingleRoom extends Room {
@@ -58,6 +73,19 @@ class DoubleRoom extends Room {
 class SuiteRoom extends Room {
     public SuiteRoom() {
         super("Suite Room", 3, 300.0);
+    // Update availability (increase/decrease)
+    public void updateAvailability(String roomType, int change) {
+        int current = getAvailability(roomType);
+        inventory.put(roomType, current + change);
+    }
+
+    // Display all inventory
+    public void displayInventory() {
+        System.out.println("====== Room Inventory ======");
+        for (Map.Entry<String, Integer> entry : inventory.entrySet()) {
+            System.out.println("Room Type: " + entry.getKey() +
+                    " | Available: " + entry.getValue());
+        }
     }
 }
 
@@ -120,5 +148,26 @@ public class Bookmystayapp{
         searchService.searchAvailableRooms(inventory, roomMap);
 
         System.out.println("Application Version: 4.0");
+        // Initialize inventory
+        RoomInventory inventory = new RoomInventory();
+
+        // Register room types
+        inventory.addRoomType("Single Room", 5);
+        inventory.addRoomType("Double Room", 3);
+        inventory.addRoomType("Suite Room", 2);
+
+        // Display initial inventory
+        inventory.displayInventory();
+
+        System.out.println("\nUpdating availability...");
+
+        // Update inventory
+        inventory.updateAvailability("Single Room", -1); // booking
+        inventory.updateAvailability("Suite Room", 1);   // cancellation
+
+        // Display updated inventory
+        inventory.displayInventory();
+
+        System.out.println("\nApplication Version: 3.1");
     }
 }
